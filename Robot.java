@@ -1,11 +1,14 @@
 package org.usfirst.frc3482.robot;
 
 import edu.wpi.first.wpilibj.SampleRobot;
+
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.CANTalon;
 
 public class Robot extends SampleRobot {
+	CANTalon frontLeft, frontRight, rearLeft, rearRight;
 	RobotDrive robotDrive;
 	Joystick driveController;
 	double deadZone = 0.1;
@@ -14,7 +17,11 @@ public class Robot extends SampleRobot {
 	double rightX = driveController.getRawAxis(4);
 	
 	public void robotInit() {
-		robotDrive = new RobotDrive(0,8,2,3);
+		frontLeft = new CANTalon(0);
+		rearLeft = new CANTalon(8);
+		frontRight = new CANTalon(2);
+		rearRight = new CANTalon(3);
+		robotDrive = new RobotDrive(frontLeft,rearLeft,frontRight,rearRight);
 		driveController = new Joystick(0);
 	}
 	
