@@ -1,48 +1,63 @@
 package org.usfirst.frc3482.robot;
 
-import edu.wpi.first.wpilibj.SampleRobot;
-
+import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.RobotDrive;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.CANTalon;
+import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.command.Scheduler;
 
-public class Robot extends SampleRobot {
-	CANTalon frontLeft, frontRight, rearLeft, rearRight;
-	RobotDrive robotDrive;
-	Joystick driveController;
-	double deadZone = 0.1;
-	double rotateSpeed = 0.75;
-	double leftY = driveController.getRawAxis(2);
-	double rightX = driveController.getRawAxis(4);
+import org.usfirst.frc3482.robot.subsystems.*;
+import org.usfirst.frc3482.robot.commands.*;
+
+public class Robot extends IterativeRobot {
+		
+	Command teleopCommand;
 	
+	public static OI oi;
+	public static Chassis chassis;
+		
 	public void robotInit() {
-		frontLeft = new CANTalon(0);
-		rearLeft = new CANTalon(8);
-		frontRight = new CANTalon(2);
-		rearRight = new CANTalon(3);
-		robotDrive = new RobotDrive(frontLeft,rearLeft,frontRight,rearRight);
-		driveController = new Joystick(0);
+		RobotMap.init();
+		chassis = new Chassis();
+		
+		teleopCommand = new Drive();
+		
+		oi = new OI();
 	}
 	
-	public void autonomousPeriodic() {
+	public void disabledInit() {
 		
 	}
 	
+	public void disabledPeriodic() {
+		//Scheduler.getInstance().run();
+	}
+	
+	public void autonomousInit() {
+		
+	}
+	
+	public void autonomousPeriodic() {
+		//Scheduler.getInstance().run();
+		
+	}
+	
+	public void teleopInit() {
+		Scheduler.getInstance().run();
+		Robot.chassis.drive(Robot.oi.getxboxController());
+	}
+	
 	public void operatorControl() {
-		while (isOperatorControl() && isEnabled()) {
-			if (leftY < deadZone && leftY > -deadZone) {
-				leftY = 0;
-			}
-			if (rightX < deadZone && rightX > -deadZone) {
-				rightX = 0;
-			}
-			if (leftY == 0 && rightX == 0) {
-				return;
-			}
-			robotDrive.arcadeDrive(leftY, rightX*rotateSpeed);
-			Timer.delay(0.01);
+		while(isOperatorControl() && isEnabled()) {
+			//Robot.chassis.drive(Robot.oi.getxboxController());
+			//Timer.delay(.05);
 		}
 	}
 	
+	public void teleopPeriodic() {
+		Robot.chassis.drive(Robot.oi.getxboxController());
+	}
+	
+	public void testPeriodic() {
+		
+	}
 }
