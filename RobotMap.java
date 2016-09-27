@@ -4,6 +4,7 @@ import org.usfirst.frc3482.robot.subsystems.*;
 
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.Relay;
 
 public class RobotMap {
 	public static CANTalon frontLeft;
@@ -11,6 +12,7 @@ public class RobotMap {
 	public static CANTalon frontRight;
 	public static CANTalon backRight;
 	public static RobotDrive driveRobot;
+	public static Relay feedShooter;
 	
 	public static void init() {
 		
@@ -19,6 +21,8 @@ public class RobotMap {
 		frontRight = new CANTalon(2);
 		backRight = new CANTalon(3);
 		driveRobot = new RobotDrive(frontLeft, backLeft, frontRight, backRight);
+		
+		feedShooter = new Relay(0);
 		
 	}
 }
