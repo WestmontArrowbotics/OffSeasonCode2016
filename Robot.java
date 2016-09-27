@@ -16,12 +16,14 @@ public class Robot extends IterativeRobot {
 	
 	public static OI oi;
 	public static Chassis chassis;
+	public static Intake intake;
 	
 	public static SendableChooser autoChooser;
 		
 	public void robotInit() {
 		RobotMap.init();
 		chassis = new Chassis();
+		intake = new Intake();
 		
 		oi = new OI();
 	
