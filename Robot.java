@@ -15,6 +15,7 @@ public class Robot extends IterativeRobot {
 	Command autonomousCommand;
 	//FUCK LINUX
 	//AYYYYYYYYYYYYLMAO
+	//#STOPTHEDAB
 	public static OI oi;
 	public static Chassis chassis;
 	public static Intake intake;
