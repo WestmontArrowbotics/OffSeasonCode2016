@@ -43,10 +43,6 @@ public class OI {
 		lowerIntakeButton = new JoystickButton(joystick, 7);
 		lowerIntakeButton.whileHeld(new MoveIntake(false));
 		
-		getPositionButton = new JoystickButton(joystick, 10);
-		getPositionButton.whenPressed(new GetPosition());
-		
-		
 	}
 	public Joystick getxboxController() {
 		return xboxController;
