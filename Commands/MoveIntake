@@ -1,0 +1,44 @@
+package org.usfirst.frc3482.robot.commands;
+
+import edu.wpi.first.wpilibj.command.Command;
+import org.usfirst.frc3482.robot.subsystems.*;
+import org.usfirst.frc3482.robot.*;
+
+public class MoveIntake extends Command {
+	
+	boolean direction;
+	public MoveIntake() {
+		direction = true;
+	}
+	
+	public MoveIntake(boolean direction) {
+		this.direction = direction;
+	}
+
+	protected void initialize() {
+		Robot.intake.stopPID();
+	}
+
+	protected void execute() {
+		if (direction) {
+			Robot.intake.raiseIntake();
+		} else {
+			System.out.println("intake lowered");
+			Robot.intake.lowerIntake();
+		}
+	}
+
+	protected boolean isFinished() {
+		return false;
+	}
+
+	protected void end() {
+		Robot.intake.stopMovingIntake();
+		Robot.intake.startPID();
+	}
+
+	protected void interrupted() {
+		end();
+	}
+
+}
