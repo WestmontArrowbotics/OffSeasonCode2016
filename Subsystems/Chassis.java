@@ -18,9 +18,16 @@ public class Chassis extends Subsystem implements PIDOutput {
 	
 	double turnSpeed = 0.75;
 	
+	public void invertMotors() {
+		robotDrive.setInvertedMotor(RobotDrive.MotorType.kFrontLeft, true);
+		robotDrive.setInvertedMotor(RobotDrive.MotorType.kRearLeft, true);
+		robotDrive.setInvertedMotor(RobotDrive.MotorType.kFrontRight, true);
+		robotDrive.setInvertedMotor(RobotDrive.MotorType.kRearRight, true);
+	}
+	
 	public void drive(Joystick s) {
 		double deadZone = 0.1;
-		double leftY = s.getRawAxis(2);
+		double leftY = s.getRawAxis(1);
 		double rightX = s.getRawAxis(4);
 		
 		if (leftY < deadZone && leftY > -deadZone) {
