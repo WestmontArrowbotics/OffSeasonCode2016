@@ -1,27 +1,40 @@
 package org.usfirst.frc3482.robot;
 
-import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.Scheduler;
-import edu.wpi.first.wpilibj.smartdashboard.*;
-import edu.wpi.first.wpilibj.CANTalon;
-import edu.wpi.first.wpilibj.CANTalon.TalonControlMode;
-import edu.wpi.first.wpilibj.DigitalInput;
+import org.usfirst.frc3482.robot.commands.AutonomousCharge;
+import org.usfirst.frc3482.robot.commands.AutonomousLowBar;
+import org.usfirst.frc3482.robot.commands.Drive;
+import org.usfirst.frc3482.robot.subsystems.Camera;
+import org.usfirst.frc3482.robot.subsystems.Chassis;
+import org.usfirst.frc3482.robot.subsystems.Intake;
+import org.usfirst.frc3482.robot.subsystems.RangeFinder;
+import org.usfirst.frc3482.robot.subsystems.Shooter;
 
-import org.usfirst.frc3482.robot.subsystems.*;
-import org.usfirst.frc3482.robot.commands.*;
+import com.ni.vision.NIVision;
+import com.ni.vision.NIVision.Image;
+
+import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.command.CommandGroup;
+import edu.wpi.first.wpilibj.command.Scheduler;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends IterativeRobot {
 		
 	Command teleopCommand;
 	Command autonomousCommand;
 	
+	int autoLoop = 0;
 	
 	public static OI oi;
 	public static Chassis chassis;
 	public static Intake intake;
 	public static Shooter shooter;
+	public static RangeFinder rangeFinderLeft;
+	public static RangeFinder rangeFinderRight;
+	public static Camera camera;
+	public static Image frame;
+	public static int session;
 	
 	public static SendableChooser autoChooser;	
 		
@@ -30,12 +43,35 @@ public class Robot extends IterativeRobot {
 		chassis = new Chassis();
 		intake = new Intake();
 		shooter = new Shooter();
+		camera = new Camera();
+		
+		rangeFinderLeft = new RangeFinder(RobotMap.leftRF, .0098);
+//		rangeFinderRight = new RangeFinder(RobotMap.rightRF, .0098);
 		
 		oi = new OI();
 		
-		//autoChooser = new SendableChooser();
-		//autonomousCommand = new AutonomousCommand;
+		autoChooser = new SendableChooser();
 		teleopCommand = new Drive();
+		
+		//set range finder average and oversample bits
+		RobotMap.leftRF.setAverageBits(6);
+		RobotMap.leftRF.setOversampleBits(4);
+//		RobotMap.rightRF.setAverageBits(6);
+//		RobotMap.rightRF.setOversampleBits(4);
+		
+		
+		autoChooser.addObject("CHARGE", new AutonomousCharge());
+		autoChooser.addObject("Low Bar", new AutonomousLowBar());
+		SmartDashboard.putData("Autonomous Mode Chooser", autoChooser);
+
+		frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_HSL, 0);
+
+        // the camera name (ex "cam0") can be found through the roborio web interface
+        session = NIVision.IMAQdxOpenCamera("cam0",
+                NIVision.IMAQdxCameraControlMode.CameraControlModeController);
+        NIVision.IMAQdxConfigureGrab(session);
+		
+		
 		
 	}
 	
@@ -48,18 +84,38 @@ public class Robot extends IterativeRobot {
 	}
 	
 	public void autonomousInit() {
-		System.out.println("Autonomous Initiated");
-		//autonomousCommand = (Command) autoChooser.getSelected();
-		if (autonomousCommand != null) autonomousCommand.start();
+		NIVision.IMAQdxStartAcquisition(session);
+		autonomousCommand = (CommandGroup) autoChooser.getSelected();
+		System.out.println("AUTO INIT");
+    	
+        if (autonomousCommand != null) autonomousCommand.start();
 	}
 	
 	public void autonomousPeriodic() {
 		Scheduler.getInstance().run();
-		
+		Robot.intake.maintainPosition();    
+		/*autoLoop ++;
+		SmartDashboard.putNumber("AutoLoop: ", autoLoop);
+		//Robot.intake.middleIntake();
+		if (autoLoop < 500) {
+			
+			RobotMap.frontLeft.set(-0.5); 
+			RobotMap.frontRight.set(0.5);
+			RobotMap.backLeft.set(-0.5);
+			RobotMap.backRight.set(0.5);
+		}
+		else if (autoLoop >= 500){
+			RobotMap.frontLeft.set(0.0);
+			RobotMap.frontRight.set(0.0);
+			RobotMap.backLeft.set(0.0);
+			RobotMap.backRight.set(0.0);
+		}*/
 	}
 	
 	public void teleopInit() {
-		if (autonomousCommand != null) autonomousCommand.cancel();
+		if (autonomousCommand != null)
+			autonomousCommand.cancel();
+		System.out.println("Teleop initialized");
 		Robot.intake.stopPID();
 	}
 	
@@ -72,7 +128,10 @@ public class Robot extends IterativeRobot {
 	
 	public void teleopPeriodic() {
 		Scheduler.getInstance().run();
+		//Robot.oi.xboxController.setRumble(RumbleType.kLeftRumble, 1);
 		Robot.chassis.drive(Robot.oi.getxboxController());
+		SmartDashboard.putNumber("Distance (left)", rangeFinderLeft.medianInches());
+		//SmartDashboard.putNumber("Distance (right)", rangeFinderRight.medianInches());
 		Robot.intake.maintainPosition();
 	}
 	
