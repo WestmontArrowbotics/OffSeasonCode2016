@@ -1,11 +1,13 @@
 package org.usfirst.frc3482.robot;
 
-import org.usfirst.frc3482.robot.subsystems.*;
+import org.usfirst.frc3482.robot.subsystems.RangeFinder;
 
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.CANTalon;
-import edu.wpi.first.wpilibj.RobotDrive;
-import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Relay;
+import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.Timer;
 
 public class RobotMap {
 	public static CANTalon frontLeft;
@@ -19,8 +21,13 @@ public class RobotMap {
 	public static CANTalon shootBall;
 	public static CANTalon raiseIntake;
 	public static CANTalon intake;
+	public static Timer timer;
+	public static AnalogInput leftRF;
+//	public static AnalogInput rightRF;
 	
 	public static void init() {
+		
+		timer = new Timer();
 		
 		frontLeft = new CANTalon(0);
 		backLeft = new CANTalon(8);
@@ -37,5 +44,7 @@ public class RobotMap {
 		
 		shootBall = new CANTalon(4);
 		
+		leftRF = new AnalogInput(0);
+//		rightRF = new AnalogInput(1);
 	}
 }
